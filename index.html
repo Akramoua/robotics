@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#101820" />
+    <meta name="description" content="محاكاة تعليمية تفاعلية لروبوت متحرك يستخدم خوارزمية A* لتخطيط المسار وتجنب العوائق." />
+    <title>مختبر الروبوتات | محاكاة A*</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="ambient ambient-one" aria-hidden="true"></div>
+    <div class="ambient ambient-two" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="مختبر الروبوتات">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 40 40" fill="none">
+            <path d="M20 4v5M12 11h16a4 4 0 0 1 4 4v13a4 4 0 0 1-4 4H12a4 4 0 0 1-4-4V15a4 4 0 0 1 4-4Z" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" />
+            <circle cx="15" cy="21" r="2.2" fill="currentColor" />
+            <circle cx="25" cy="21" r="2.2" fill="currentColor" />
+            <path d="M15 27h10" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+          </svg>
+        </span>
+        <span class="brand-copy"><strong>مختبر الروبوتات</strong><small>ROBOTICS LAB · AI</small></span>
+      </a>
+      <div class="topbar-status"><span class="live-dot"></span><span>محاكاة تفاعلية</span><span class="topbar-divider"></span><span class="topbar-en">A* PATHFINDING</span></div>
+    </header>
+
+    <main class="page-shell">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="eyebrow-line"></span> مختبر تخطيط المسار <span class="eyebrow-en">/ PATH PLANNING</span></p>
+          <h1>علّم الروبوت <span>كيف يصل.</span></h1>
+          <p class="hero-text">جهّز الخريطة، شاهد الخوارزمية تستكشف، ثم راقب الروبوت وهو يجد طريقه حول العوائق.</p>
+        </div>
+        <div class="hero-badge" aria-label="A-star algorithm">
+          <span class="badge-symbol">A*</span>
+          <span><strong>خوارزمية A*</strong><small>بحث موجّه بالاستدلال</small></span>
+        </div>
+      </section>
+
+      <section class="workspace" aria-label="محاكاة الروبوت">
+        <section class="simulation-panel panel">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">01 / SIMULATOR</p>
+              <h2>ساحة الروبوت</h2>
+            </div>
+            <div class="map-size"><span class="live-dot"></span> <span id="mapDimensions">18 × 12 شبكة</span></div>
+          </div>
+
+          <div class="board-toolbar">
+            <div class="tool-group" role="group" aria-label="أدوات تعديل الخريطة">
+              <button class="tool-button" data-tool="start" aria-pressed="false" title="انقر خلية لتحديد موقع الروبوت">
+                <span class="tool-icon robot-mini" aria-hidden="true"></span><span>الروبوت</span>
+              </button>
+              <button class="tool-button" data-tool="goal" aria-pressed="false" title="انقر خلية لتحديد الهدف">
+                <span class="tool-icon goal-mini" aria-hidden="true"></span><span>الهدف</span>
+              </button>
+              <button class="tool-button active" data-tool="wall" aria-pressed="true" title="انقر لإضافة أو إزالة عائق">
+                <span class="tool-icon wall-mini" aria-hidden="true"></span><span>عائق</span>
+              </button>
+              <button class="tool-button" data-tool="erase" aria-pressed="false" title="انقر لإزالة عائق">
+                <span class="tool-icon erase-mini" aria-hidden="true">⌫</span><span>ممحاة</span>
+              </button>
+            </div>
+            <div class="edit-hint"><span class="hint-key">انقر</span> على الخريطة لتعديلها</div>
+          </div>
+
+          <div class="grid-frame">
+            <div id="grid" class="grid" role="grid" aria-label="خريطة شبكة الروبوت"></div>
+          </div>
+
+          <div class="board-footer">
+            <div class="legend" aria-label="دليل الخريطة">
+              <span><i class="legend-dot legend-robot"></i> روبوت</span>
+              <span><i class="legend-dot legend-goal"></i> هدف</span>
+              <span><i class="legend-dot legend-wall"></i> عائق</span>
+              <span><i class="legend-dot legend-visited"></i> خلايا مستكشفة</span>
+              <span><i class="legend-line"></i> المسار</span>
+            </div>
+            <p class="board-note">يمكنك تغيير البداية والهدف أو رسم العوائق قبل التشغيل.</p>
+          </div>
+        </section>
+
+        <aside class="control-rail">
+          <section class="panel control-panel">
+            <div class="panel-heading compact-heading">
+              <div><p class="section-kicker">02 / CONTROL</p><h2>لوحة التحكم</h2></div>
+              <span class="control-chip">LIVE</span>
+            </div>
+            <div class="control-buttons">
+              <button id="runButton" class="button-primary"><span class="play-icon" aria-hidden="true"></span><span id="runLabel">ابدأ البحث</span></button>
+              <button id="stepButton" class="button-secondary"><span class="step-icon" aria-hidden="true">Ⅱ</span> خطوة واحدة</button>
+            </div>
+            <div class="secondary-actions">
+              <button id="resetButton" class="text-button"><span aria-hidden="true">↺</span> إعادة المحاكاة</button>
+              <button id="clearButton" class="text-button danger-text"><span aria-hidden="true">⌫</span> مسح العوائق</button>
+            </div>
+            <div class="speed-control">
+              <div class="speed-label"><label for="speedRange">سرعة المحاكاة</label><span id="speedValue">3×</span></div>
+              <div class="range-row"><span class="speed-slow">بطيء</span><input id="speedRange" type="range" min="1" max="5" value="3" aria-label="سرعة المحاكاة" /><span class="speed-fast">سريع</span></div>
+            </div>
+            <div id="statusBox" class="status-box" data-state="ready" role="status" aria-live="polite">
+              <span class="status-indicator"></span><span id="statusText">الخريطة جاهزة — ابدأ البحث.</span>
+            </div>
+          </section>
+
+          <section class="panel metrics-panel">
+            <div class="panel-heading compact-heading">
+              <div><p class="section-kicker">03 / TELEMETRY</p><h2>بيانات الرحلة</h2></div>
+              <span class="telemetry-icon" aria-hidden="true">⌁</span>
+            </div>
+            <div class="metrics-grid">
+              <div class="metric-card"><span>خلايا فُحصت</span><strong id="visitedMetric">0</strong><small>EXPLORED</small></div>
+              <div class="metric-card"><span>خطوات الروبوت</span><strong id="stepsMetric">0</strong><small>MOVES</small></div>
+              <div class="metric-card metric-wide"><span>طول المسار</span><strong id="costMetric">— <small>خطوة</small></strong><small>PATH COST · g(n)</small></div>
+            </div>
+          </section>
+
+          <section class="panel lesson-panel">
+            <div class="lesson-title"><span class="lesson-spark">✳</span><div><p class="section-kicker">الفكرة الأساسية</p><h2>كيف تختار A*؟</h2></div></div>
+            <div class="formula"><span>f(n)</span><b>=</b><span class="formula-g">g(n)</span><b>+</b><span class="formula-h">h(n)</span></div>
+            <div class="formula-key"><span><i class="key-g"></i><b>g(n)</b> التكلفة من البداية</span><span><i class="key-h"></i><b>h(n)</b> تقدير المسافة للهدف</span></div>
+            <p class="lesson-note">يفحص الروبوت المسار الأقل كلفة متوقعة، ويعيد الحساب حتى يجد طريقًا أو يثبت تعذّره.</p>
+          </section>
+        </aside>
+      </section>
+
+      <footer class="page-footer"><span>مفاهيم المقرر: <b>الوكيل الذكي · البيئة · البحث · A*</b></span><span class="footer-code">SIMULATION BUILD 01 <i></i> READY</span></footer>
+    </main>
+
+    <script src="/app.js" defer></script>
+  </body>
+</html>
